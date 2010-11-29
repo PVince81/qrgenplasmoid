@@ -26,14 +26,16 @@
 
 #include "../config/Config.h"
 
-class QRCodeWidget : public QLabel
+class QRCodeWidget : public QWidget
 {
 	Q_OBJECT
 private:
 	QREncoder* encoder;
 	QPixmap code;
+	bool empty;
 protected:
 	void mousePressEvent ( QMouseEvent * ev );
+	void paintEvent(QPaintEvent * );
 signals:
 	void clicked();
 public:

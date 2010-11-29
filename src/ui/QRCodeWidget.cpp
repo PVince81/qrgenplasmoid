@@ -22,17 +22,13 @@
 #include <QtGui>
 
 QRCodeWidget::QRCodeWidget( QWidget * parent, Qt::WindowFlags f )
-	: QLabel( parent, f )
+	: QWidget( parent, f )
 {
 	qDebug()<<"QRCodeWidget constructor";
 	encoder = new QREncoder();
 	encoder->margin = 2;
 	encoder->size = 4;
-	this->setScaledContents(true);
-
-	QSizePolicy labelSizePolicy( QSizePolicy::Ignored, QSizePolicy::Expanding, QSizePolicy::Label );
-	labelSizePolicy.setHeightForWidth(true);
-	this->setSizePolicy(labelSizePolicy);
+	empty = true;
 }
 
 QRCodeWidget::~QRCodeWidget()
@@ -42,8 +38,16 @@ QRCodeWidget::~QRCodeWidget()
 
 void QRCodeWidget::setText( QString text )
 {
-	code = encoder->encodePixmap( text );
-	this->setPixmap(code);
+	if ( !text.isNull() && !text.isEmpty() )
+	{
+		code = encoder->encodePixmap( text );
+		empty = false;
+	}
+	else
+	{
+		empty = true;
+	}
+	update();
 }
 
 void QRCodeWidget::mousePressEvent ( QMouseEvent * ev )
@@ -100,3 +104,25 @@ Config::ErrorCorrectionMode QRCodeWidget::errorCorrection()
 	}
 }
 
+void QRCodeWidget::paintEvent(QPaintEvent * ev )
+{
+	QWidget::paintEvent( ev );
+
+	if ( empty )
+	{
+		return;
+	}
+    QPainter p;
+    p.begin(this);
+
+	int width = this->width();
+	int height = this->height();
+	int dimension = width;
+	if ( dimension > height )
+	{
+		dimension = height;
+	}
+
+	p.drawPixmap( 0, 0, dimension, dimension, code );
+    p.end();
+}

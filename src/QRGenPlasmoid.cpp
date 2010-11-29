@@ -29,6 +29,12 @@ QRGenPlasmoid::QRGenPlasmoid(QObject *parent, const QVariantList &args)
 
 	this->setMinimumSize( 32, 32 );
 	this->setPopupIcon("qrgenplasmoid");
+
+	configuration.errorCorrectionMode = Config::L;
+	configuration.moduleSize = 5;
+	configuration.margin = 1;
+	configuration.selectionMode = Config::Selection;
+	configuration.directEncode = true;
 }
 
 QRGenPlasmoid::~QRGenPlasmoid()
@@ -66,12 +72,6 @@ void QRGenPlasmoid::init()
 	encodeButton->setText(i18n("Encode"));
 	editLayout->addWidget(encodeButton);
 
-	configuration.errorCorrectionMode = Config::L;
-	configuration.moduleSize = 5;
-	configuration.margin = 1;
-	configuration.selectionMode = Config::Selection;
-	configuration.directEncode = true;
-
 	codeWidget = new QRCodeWidget();
 
 	QSplitter* editSplitter = new QSplitter( Qt::Horizontal );
@@ -90,6 +90,8 @@ void QRGenPlasmoid::init()
 
 	loadConfig();
 	applyConfig();
+
+	mainWidget->resize(400, 200);
 
 	connect( encodeButton, SIGNAL( clicked() ), this, SLOT( encodeAction() ) );
 	connect( editor, SIGNAL( textChanged() ), this, SLOT( textChanged() ) );
@@ -196,6 +198,12 @@ void QRGenPlasmoid::configAccepted( )
 	configuration = configDialog->config();
 	applyConfig();
 	saveConfig();
+
+	if ( configuration.directEncode )
+	{
+		// refresh the already displayed code
+		encodeAction();
+	}
 }
 
 void QRGenPlasmoid::applyConfig()

@@ -1,9 +1,10 @@
 QR Code Plasmoid
 ----------------
 
-The QR Code Plasmoid is a plasmoid for KDE4 that enables the user to quickly
-export some selected text in the form of a QR Code. The QR Code can then
-be scanned by a mobile phone or other device to retrieve the information.
+The QR Code Plasmoid is a plasmoid for KDE 4 that enables the user to quickly
+export some selected text in the form of a QR Code. 
+The purpose is to be able to quickly copy and paste text from the computer to
+a mobile phone or other devices.
 
 This plasmoid requires the libqrencode library and doesn't use any web services
 so it can work offline.
@@ -12,9 +13,17 @@ The best way to use it is to add the Plasmoid to your task bar, not directly
 on the desktop.
 
 
+Features:
+---------
+
+- Encode text into a QR Code with a single click
+- The text can be taken from the current selection or clipboard
+
+
 Requirements
 ------------
-   libqrencode: http://fukuchi.org/works/qrencode/index.en.html
+
+- libqrencode: http://fukuchi.org/works/qrencode/index.en.html
 
 
 Compile and install
@@ -30,8 +39,25 @@ kbuildsyscoca4
 After this the plasmoid should become visible in the list of Plasmoids.
 
 
+Usage
+-----
+
+Select some text in any application, then click the plasmoid's icon.
+A popup will appear with the matching QR Code.
+
+It is possible to modify the application's behavior in the plasmoid's
+configuration dialog.
+
+
+License
+-------
+
+The License is GPL3. See the "LICENSE" file in the "doc" director for details.
+
 Links
 -----
 
-Official website of QR Code: http://www.qrcode.com/
+- Github repository: https://github.com/PVince81/qrgenplasmoid
+- Website of libqrencode: http://fukuchi.org/works/qrencode/index.en.html
+- Official website of QR Code: http://www.qrcode.com/
 

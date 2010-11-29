@@ -1,3 +1,12 @@
-- fix qr code scaling
+Features:
 - improve UI design
 - i18n
+- add "encode mode" option (numeric, 7 bits, 8 bits, kanji, auto)
+- add setting for text box / code alignment ?
+- save the splitter state/size
+
+Tests:
+- Test config load/save
+- Test margin/size changes
+- Test code update after config change
+- Test with UTF-8 / chinese characters 
