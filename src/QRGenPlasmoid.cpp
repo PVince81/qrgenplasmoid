@@ -20,19 +20,17 @@
 #include "QRGenPlasmoid.h"
 
 #include <QtGui>
+#include <KConfigGroup>
 
 QRGenPlasmoid::QRGenPlasmoid(QObject *parent, const QVariantList &args)
 	: Plasma::PopupApplet(parent, args)
 {
-	encoder = new QREncoder();
-	encoder->margin = 2;
-	encoder->size = 4;
 	//resize(30, 30);
 	//selectionMode = QClipboard::Clipboard;
 	selectionMode = QClipboard::Selection;
 
 	this->setMinimumSize( 32, 32 );
-	this->setPopupIcon("qrviewplasmoid");
+	this->setPopupIcon("qrgenplasmoid");
 }
 
 QRGenPlasmoid::~QRGenPlasmoid()
@@ -42,11 +40,10 @@ QRGenPlasmoid::~QRGenPlasmoid()
     } else {
         // Save settings
     }
-    delete encoder;
 }
 
 /*
-zvoid QRViewPlasmoid::paintInterface(QPainter *p,
+void QRGenPlasmoid::paintInterface(QPainter *p,
         const QStyleOptionGraphicsItem *option,
         const QRect& contentsRect)
 {
@@ -57,7 +54,7 @@ zvoid QRViewPlasmoid::paintInterface(QPainter *p,
 
 void QRGenPlasmoid::init()
 {
-	qDebug()<<"QRViewPlasmoid::init()";
+	qDebug()<<"QRGenPlasmoid::init()";
 	mainWidget = new QWidget();
 
 	QHBoxLayout* mainLayout = new QHBoxLayout();
@@ -73,30 +70,54 @@ void QRGenPlasmoid::init()
 	editLayout->addWidget(encodeButton);
 	*/
 
-	codeLabel = new QLabel();
-	codeLabel->setScaledContents(true);
-
-	QSizePolicy labelSizePolicy( QSizePolicy::Ignored, QSizePolicy::Expanding, QSizePolicy::Label );
-	labelSizePolicy.setHeightForWidth(true);
-	codeLabel->setSizePolicy(labelSizePolicy);
+	codeWidget = new QRCodeWidget();
 
 	QSplitter* editSplitter = new QSplitter( Qt::Horizontal );
 	editSplitter->addWidget(editor);
-	editSplitter->addWidget(codeLabel);
+	editSplitter->addWidget(codeWidget);
 	//mainLayout->addLayout(editLayout);
 	//mainLayout->addWidget(editSplitter);
-	//mainLayout->addWidget(codeLabel, Qt::AlignHCenter);
+	//mainLayout->addWidget(codeWidget, Qt::AlignHCenter);
 	mainLayout->addWidget(editSplitter);
 
 	mainWidget->setLayout(mainLayout);
 
+	loadConfig();
+
 	//connect( encodeButton, SIGNAL( clicked() ), this, SLOT( encodeAction() ) );
 	connect( editor, SIGNAL( textChanged() ), this, SLOT( encodeAction() ) );
+    connect( codeWidget, SIGNAL( clicked() ), this, SLOT( saveCodeImage() ) );
+}
+
+void QRGenPlasmoid::loadConfig()
+{
+	KConfigGroup cnf = config();
+	QString selectionModeString = cnf.readEntry( "selectionMode", QString());
+	if ( selectionModeString == "clipboard" )
+	{
+		selectionMode = QClipboard::Clipboard;
+	}
+	else
+	{
+		selectionMode = QClipboard::Selection;
+	}
+}
+
+void QRGenPlasmoid::saveConfig()
+{
+	KConfigGroup cnf = config();
+	QString selectionModeString = "selection";
+	if ( selectionMode == QClipboard::Clipboard )
+	{
+		selectionModeString = "clipboard";
+	}
+	cnf.writeEntry( "selectionMode", selectionModeString );
+	emit configNeedsSaving();
 }
 
 QWidget* QRGenPlasmoid::widget()
 {
-	qDebug()<<"QRViewPlasmoid::widget()";
+	qDebug()<<"QRGenPlasmoid::widget()";
 	return mainWidget;
 }
 
@@ -123,12 +144,62 @@ void QRGenPlasmoid::popupEvent( bool show )
 	}
 }
 
-void QRGenPlasmoid::encodeAction()
+void QRGenPlasmoid::configAccepted( )
 {
-	code = encoder->encodePixmap( editor->toPlainText() );
-	codeLabel->setPixmap(code);
+	if ( configDialog->selectionType() == QRGenConfigDialog::Selection )
+	{
+		selectionMode = QClipboard::Selection;
+	}
+	else
+	{
+		selectionMode = QClipboard::Clipboard;
+	}
+	saveConfig();
 }
 
+void QRGenPlasmoid::encodeAction()
+{
+	codeWidget->setText( editor->toPlainText() );
+}
 
-K_EXPORT_PLASMA_APPLET(qrviewplasmoid, QRGenPlasmoid)
+void QRGenPlasmoid::createConfigurationInterface( KConfigDialog* parent )
+{
+	qDebug()<<"QRGenPlasmoid::createConfigurationInterface";
+    configDialog = new QRGenConfigDialog();
+    if ( selectionMode == QClipboard::Selection )
+    {
+    	configDialog->setSelectionType( QRGenConfigDialog::Selection );
+    }
+    else
+    {
+    	configDialog->setSelectionType( QRGenConfigDialog::Clipboard );
+    }
+
+    connect( parent, SIGNAL( accepted() ), this, SLOT( configAccepted() ) );
+
+    parent->addPage( configDialog, i18n("General"), icon() );
+
+	setHasConfigurationInterface(true);
+}
+
+void QRGenPlasmoid::saveCodeImage()
+{
+	QString fileName = QFileDialog::getSaveFileName(
+			this->codeWidget,
+			i18n("Save code image"),
+			"qrcode.png",
+			i18n("Images (*.png *.xpm *.jpg)")
+			);
+	if ( !fileName.isNull() )
+	{
+		saveCodeImage( fileName );
+	}
+}
+
+void QRGenPlasmoid::saveCodeImage( QString fileName )
+{
+	codeWidget->pixmap().save( fileName );
+}
+
+K_EXPORT_PLASMA_APPLET(qrgenplasmoid, QRGenPlasmoid)
 

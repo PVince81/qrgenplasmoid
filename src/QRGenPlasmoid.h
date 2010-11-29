@@ -17,38 +17,46 @@
  *
 */
 
-#ifndef QRVIEWPLASMOID_H_
-#define QRVIEWPLASMOID_H_
+#ifndef QRGENPLASMOID_H_
+#define QRGENPLASMOID_H_
 
 #include <Plasma/PopupApplet>
 #include <QClipboard>
 #include <QLabel>
 #include <QTextEdit>
+#include <KConfigDialog>
 
-#include "encoder/QREncoder.h"
+#include "ui/QRCodeWidget.h"
+#include "ui/QRGenConfigDialog.h"
 
 class QRGenPlasmoid : public Plasma::PopupApplet
 {
 	Q_OBJECT
 private:
-	QREncoder* encoder;
-	QPixmap code;
 	QString getClipboardContent();
 	QClipboard::Mode selectionMode;
-	QLabel* codeLabel;
+	QRCodeWidget* codeWidget;
 	QWidget* mainWidget;
 	QTextEdit* editor;
+	QRGenConfigDialog* configDialog;
 protected:
     QWidget* widget();
     void popupEvent( bool show );
+    void loadConfig();
+    void saveConfig();
+	void saveCodeImage( QString fileName );
 
 public slots:
 	void encodeAction();
+	void configAccepted();
+	void saveCodeImage();
 
 public:
 
 	QRGenPlasmoid(QObject *parent, const QVariantList &args);
 	virtual ~QRGenPlasmoid();
+
+	void createConfigurationInterface( KConfigDialog* parent );
 /*
     void paintInterface(QPainter *p,
             const QStyleOptionGraphicsItem *option,

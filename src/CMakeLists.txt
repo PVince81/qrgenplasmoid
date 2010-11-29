@@ -19,7 +19,7 @@ include_directories(
    )
  
 # We add our source code here
-set(qrgenplasmoid_SRCS QRGenPlasmoid.cpp)
+set(qrgenplasmoid_SRCS QRGenPlasmoid.cpp ui/QRGenConfigDialog.cpp ui/QRCodeWidget.cpp)
  
 kde4_add_plugin(qrgenapplet ${qrgenplasmoid_SRCS})
 target_link_libraries(qrgenapplet 
