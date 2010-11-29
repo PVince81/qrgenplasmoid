@@ -28,26 +28,30 @@
 
 #include "ui/QRCodeWidget.h"
 #include "ui/QRGenConfigDialog.h"
+#include "config/Config.h"
 
 class QRGenPlasmoid : public Plasma::PopupApplet
 {
 	Q_OBJECT
 private:
 	QString getClipboardContent();
-	QClipboard::Mode selectionMode;
 	QRCodeWidget* codeWidget;
 	QWidget* mainWidget;
 	QTextEdit* editor;
 	QRGenConfigDialog* configDialog;
+	Config configuration;
+	QPushButton* encodeButton;
 protected:
     QWidget* widget();
     void popupEvent( bool show );
     void loadConfig();
     void saveConfig();
+    void applyConfig();
 	void saveCodeImage( QString fileName );
 
 public slots:
 	void encodeAction();
+	void textChanged();
 	void configAccepted();
 	void saveCodeImage();
 

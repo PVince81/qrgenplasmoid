@@ -26,8 +26,6 @@ QRGenPlasmoid::QRGenPlasmoid(QObject *parent, const QVariantList &args)
 	: Plasma::PopupApplet(parent, args)
 {
 	//resize(30, 30);
-	//selectionMode = QClipboard::Clipboard;
-	selectionMode = QClipboard::Selection;
 
 	this->setMinimumSize( 32, 32 );
 	this->setPopupIcon("qrgenplasmoid");
@@ -59,21 +57,29 @@ void QRGenPlasmoid::init()
 
 	QHBoxLayout* mainLayout = new QHBoxLayout();
 
-	QHBoxLayout* editLayout = new QHBoxLayout();
+	QVBoxLayout* editLayout = new QVBoxLayout();
 	editor = new QTextEdit();
 
-	/*
 	editLayout->addWidget(editor);
 
-	QPushButton* encodeButton = new QPushButton();
-	encodeButton->setText(tr("Encode"));
+	encodeButton = new QPushButton();
+	encodeButton->setText(i18n("Encode"));
 	editLayout->addWidget(encodeButton);
-	*/
+
+	configuration.errorCorrectionMode = Config::L;
+	configuration.moduleSize = 5;
+	configuration.margin = 1;
+	configuration.selectionMode = Config::Selection;
+	configuration.directEncode = true;
 
 	codeWidget = new QRCodeWidget();
 
 	QSplitter* editSplitter = new QSplitter( Qt::Horizontal );
-	editSplitter->addWidget(editor);
+
+	QWidget* editWidget = new QWidget();
+	editWidget->setLayout(editLayout);
+
+	editSplitter->addWidget(editWidget);
 	editSplitter->addWidget(codeWidget);
 	//mainLayout->addLayout(editLayout);
 	//mainLayout->addWidget(editSplitter);
@@ -83,35 +89,72 @@ void QRGenPlasmoid::init()
 	mainWidget->setLayout(mainLayout);
 
 	loadConfig();
+	applyConfig();
 
-	//connect( encodeButton, SIGNAL( clicked() ), this, SLOT( encodeAction() ) );
-	connect( editor, SIGNAL( textChanged() ), this, SLOT( encodeAction() ) );
+	connect( encodeButton, SIGNAL( clicked() ), this, SLOT( encodeAction() ) );
+	connect( editor, SIGNAL( textChanged() ), this, SLOT( textChanged() ) );
     connect( codeWidget, SIGNAL( clicked() ), this, SLOT( saveCodeImage() ) );
 }
 
 void QRGenPlasmoid::loadConfig()
 {
 	KConfigGroup cnf = config();
-	QString selectionModeString = cnf.readEntry( "selectionMode", QString());
+	QString selectionModeString = cnf.readEntry( "selectionMode", "selection" );
 	if ( selectionModeString == "clipboard" )
 	{
-		selectionMode = QClipboard::Clipboard;
+		configuration.selectionMode = Config::Clipboard;
 	}
 	else
 	{
-		selectionMode = QClipboard::Selection;
+		configuration.selectionMode = Config::Selection;
 	}
+
+	QString errorCorrectionString = cnf.readEntry( "errorCorrectionMode", "L" );
+	if ( errorCorrectionString == "H" )
+	{
+		configuration.errorCorrectionMode = Config::H;
+	}
+	else if ( errorCorrectionString == "Q" )
+	{
+		configuration.errorCorrectionMode = Config::Q;
+	}
+	else if ( errorCorrectionString == "M" )
+	{
+		configuration.errorCorrectionMode = Config::M;
+	}
+	else
+	{
+		configuration.errorCorrectionMode = Config::L;
+	}
+
+	configuration.moduleSize = cnf.readEntry( "moduleSize", 5 );
+	configuration.margin = cnf.readEntry( "margin", 1 );
+	configuration.directEncode = cnf.readEntry( "directEncode", true );
 }
 
 void QRGenPlasmoid::saveConfig()
 {
 	KConfigGroup cnf = config();
 	QString selectionModeString = "selection";
-	if ( selectionMode == QClipboard::Clipboard )
+	if ( configuration.selectionMode == Config::Clipboard )
 	{
 		selectionModeString = "clipboard";
 	}
 	cnf.writeEntry( "selectionMode", selectionModeString );
+
+	QString errorCorrectionString;
+	switch ( configuration.errorCorrectionMode )
+	{
+		case Config::H: errorCorrectionString = "H"; break;
+		case Config::Q: errorCorrectionString = "Q"; break;
+		case Config::M: errorCorrectionString = "M"; break;
+		default: errorCorrectionString = "L"; break;
+	}
+
+	cnf.writeEntry( "moduleSize", configuration.moduleSize );
+	cnf.writeEntry( "margin", configuration.margin );
+	cnf.writeEntry( "directEncode", configuration.directEncode );
+
 	emit configNeedsSaving();
 }
 
@@ -124,7 +167,11 @@ QWidget* QRGenPlasmoid::widget()
 
 QString QRGenPlasmoid::getClipboardContent()
 {
-	QString selection = QApplication::clipboard()->text( selectionMode );
+	QString selection = QApplication::clipboard()->text(
+			(configuration.selectionMode == Config::Clipboard)?
+					QClipboard::Clipboard
+					:QClipboard::Selection
+					 );
 	//qDebug()<<"Selection: \""<<selection<<"\"";
 	return selection;
 }
@@ -146,15 +193,26 @@ void QRGenPlasmoid::popupEvent( bool show )
 
 void QRGenPlasmoid::configAccepted( )
 {
-	if ( configDialog->selectionType() == QRGenConfigDialog::Selection )
-	{
-		selectionMode = QClipboard::Selection;
-	}
-	else
-	{
-		selectionMode = QClipboard::Clipboard;
-	}
+	configuration = configDialog->config();
+	applyConfig();
 	saveConfig();
+}
+
+void QRGenPlasmoid::applyConfig()
+{
+	codeWidget->setMargin(configuration.margin);
+	codeWidget->setModuleSize(configuration.moduleSize);
+	codeWidget->setErrorCorrection(configuration.errorCorrectionMode);
+
+	encodeButton->setVisible( !configuration.directEncode );
+}
+
+void QRGenPlasmoid::textChanged()
+{
+	if ( configuration.directEncode )
+	{
+		encodeAction();
+	}
 }
 
 void QRGenPlasmoid::encodeAction()
@@ -164,16 +222,8 @@ void QRGenPlasmoid::encodeAction()
 
 void QRGenPlasmoid::createConfigurationInterface( KConfigDialog* parent )
 {
-	qDebug()<<"QRGenPlasmoid::createConfigurationInterface";
     configDialog = new QRGenConfigDialog();
-    if ( selectionMode == QClipboard::Selection )
-    {
-    	configDialog->setSelectionType( QRGenConfigDialog::Selection );
-    }
-    else
-    {
-    	configDialog->setSelectionType( QRGenConfigDialog::Clipboard );
-    }
+    configDialog->setConfig( configuration );
 
     connect( parent, SIGNAL( accepted() ), this, SLOT( configAccepted() ) );
 

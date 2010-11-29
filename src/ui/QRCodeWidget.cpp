@@ -53,3 +53,50 @@ void QRCodeWidget::mousePressEvent ( QMouseEvent * ev )
 		emit clicked();
 	}
 }
+
+void QRCodeWidget::setModuleSize( unsigned int size )
+{
+	encoder->size = size;
+}
+
+unsigned int QRCodeWidget::moduleSize()
+{
+	return encoder->size;
+}
+
+void QRCodeWidget::setMargin( unsigned int margin )
+{
+	encoder->margin = margin;
+}
+
+unsigned int QRCodeWidget::margin()
+{
+	return encoder->margin;
+}
+
+void QRCodeWidget::setErrorCorrection( Config::ErrorCorrectionMode e )
+{
+	switch (e)
+	{
+		case Config::L: encoder->level = QR_ECLEVEL_L; break;
+		case Config::M: encoder->level = QR_ECLEVEL_M; break;
+		case Config::Q: encoder->level = QR_ECLEVEL_Q; break;
+		case Config::H: encoder->level = QR_ECLEVEL_H; break;
+		default:
+			encoder->level = QR_ECLEVEL_L;
+	}
+}
+
+Config::ErrorCorrectionMode QRCodeWidget::errorCorrection()
+{
+	switch (encoder->level)
+	{
+		case QR_ECLEVEL_L: return Config::L;
+		case QR_ECLEVEL_M: return Config::M;
+		case QR_ECLEVEL_Q: return Config::Q;
+		case QR_ECLEVEL_H: return Config::H;
+		default:
+			return Config::L;
+	}
+}
+

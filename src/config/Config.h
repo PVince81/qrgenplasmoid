@@ -17,41 +17,26 @@
  *
 */
 
-#ifndef QRCODEWIDGET_H_
-#define QRCODEWIDGET_H_
+#ifndef CONFIG_H_
+#define CONFIG_H_
 
-#include "../encoder/QREncoder.h"
-
-#include <QLabel>
-
-#include "../config/Config.h"
-
-class QRCodeWidget : public QLabel
+typedef struct Config
 {
-	Q_OBJECT
-private:
-	QREncoder* encoder;
-	QPixmap code;
-protected:
-	void mousePressEvent ( QMouseEvent * ev );
-signals:
-	void clicked();
-public:
+	enum SelectionMode
+	{
+		Selection, Clipboard
+	};
 
-	QRCodeWidget( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	virtual ~QRCodeWidget();
+	enum ErrorCorrectionMode
+	{
+		L, M, Q, H
+	};
 
-	void setText( QString text );
-	QPixmap pixmap() { return code; };
+	SelectionMode selectionMode;
+	unsigned int moduleSize;
+	unsigned int margin;
+	ErrorCorrectionMode errorCorrectionMode;
+	bool directEncode;
+} Config;
 
-	void setModuleSize( unsigned int size );
-	unsigned int moduleSize();
-
-	void setMargin( unsigned int margin );
-	unsigned int margin();
-
-	void setErrorCorrection( Config::ErrorCorrectionMode e );
-	Config::ErrorCorrectionMode errorCorrection();
-};
-
-#endif
+#endif /* CONFIG_H_ */

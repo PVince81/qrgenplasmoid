@@ -31,10 +31,37 @@ QRGenConfigDialog::QRGenConfigDialog()
 	QFormLayout* mainLayout = new QFormLayout();
 
 	selectionModeCombo = new QComboBox();
-	selectionModeCombo->addItem(i18n("Selection"));
-	selectionModeCombo->addItem(i18n("Clipboard"));
+	selectionModeCombo->addItem(i18n("Selection"), Config::Selection);
+	selectionModeCombo->addItem(i18n("Clipboard"), Config::Clipboard);
 
 	mainLayout->addRow(i18n("Selection mode"), selectionModeCombo);
+
+	directEncodeCheckBox = new QCheckBox();
+	mainLayout->addRow(i18n("Encode while typing"), directEncodeCheckBox);
+
+	marginField = new QSpinBox();
+	marginField->setRange(0, 100);
+	marginField->setSingleStep(1);
+
+	moduleSizeField = new QSpinBox();
+	moduleSizeField->setRange(1, 100);
+	moduleSizeField->setSingleStep(1);
+
+	QFormLayout* qrLayout = new QFormLayout();
+	qrLayout->addRow(i18n("Margin"), marginField);
+	qrLayout->addRow(i18n("Module size"), moduleSizeField);
+
+	errorCorrectionCombo = new QComboBox();
+	errorCorrectionCombo->addItem("L", Config::L);
+	errorCorrectionCombo->addItem("M", Config::M);
+	errorCorrectionCombo->addItem("Q", Config::Q);
+	errorCorrectionCombo->addItem("H", Config::H);
+	qrLayout->addRow(i18n("Error correction level"), errorCorrectionCombo);
+	//qrLayout->addRow(i18n("Encoder mode"));
+
+	QGroupBox* groupBox = new QGroupBox( i18n("QR Code settings") );
+	groupBox->setLayout( qrLayout );
+	mainLayout->addRow( groupBox );
 
 	this->setLayout( mainLayout );
 }
@@ -43,26 +70,65 @@ QRGenConfigDialog::~QRGenConfigDialog()
 {
 }
 
-void QRGenConfigDialog::setSelectionType( QRGenConfigDialog::SelectionType selectionType )
+void QRGenConfigDialog::setSelectionType( Config::SelectionMode selectionType )
 {
-	if ( selectionType == Selection )
-	{
-		selectionModeCombo->setCurrentIndex(0);
-	}
-	else
-	{
-		selectionModeCombo->setCurrentIndex(1);
-	}
+	selectionModeCombo->setCurrentIndex( selectionModeCombo->findData( selectionType ) );
 }
 
-QRGenConfigDialog::SelectionType QRGenConfigDialog::selectionType()
+Config::SelectionMode QRGenConfigDialog::selectionType()
 {
-	if ( selectionModeCombo->currentIndex() == 0 )
-	{
-		return Selection;
-	}
-	else
-	{
-		return Clipboard;
-	}
+	return (Config::SelectionMode)selectionModeCombo->itemData( errorCorrectionCombo->currentIndex() ).toInt();
+}
+
+void QRGenConfigDialog::setModuleSize( unsigned int size )
+{
+	moduleSizeField->setValue( size );
+}
+
+unsigned int QRGenConfigDialog::moduleSize()
+{
+	return moduleSizeField->value();
+}
+
+void QRGenConfigDialog::setMargin( unsigned int margin )
+{
+	marginField->setValue( margin );
+}
+
+unsigned int QRGenConfigDialog::margin()
+{
+	return marginField->value();
+}
+
+void QRGenConfigDialog::setErrorCorrection( Config::ErrorCorrectionMode e )
+{
+	errorCorrectionCombo->setCurrentIndex( errorCorrectionCombo->findData(e) );
+}
+
+Config::ErrorCorrectionMode QRGenConfigDialog::errorCorrection()
+{
+	return (Config::ErrorCorrectionMode)errorCorrectionCombo->itemData( errorCorrectionCombo->currentIndex() ).toInt();
+}
+
+void QRGenConfigDialog::setConfig( Config config )
+{
+	setErrorCorrection( config.errorCorrectionMode );
+	setMargin( config.margin );
+	setModuleSize( config.moduleSize );
+	setSelectionType( config.selectionMode );
+
+	directEncodeCheckBox->setChecked( config.directEncode );
+}
+
+Config QRGenConfigDialog::config()
+{
+	Config config;
+
+	config.errorCorrectionMode = errorCorrection();
+	config.margin = margin();
+	config.moduleSize = moduleSize();
+	config.selectionMode = selectionType();
+	config.directEncode = directEncodeCheckBox->isChecked();
+
+	return config;
 }

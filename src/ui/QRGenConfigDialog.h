@@ -22,19 +22,20 @@
 
 #include <QDialog>
 #include <QComboBox>
+#include <QSpinBox>
+#include <QCheckBox>
+
+#include "../config/Config.h"
 
 class QRGenConfigDialog : public QDialog
 {
 	Q_OBJECT
-public:
-	enum SelectionType
-	{
-		Selection,
-		Clipboard
-	};
-
 private:
 	QComboBox* selectionModeCombo;
+	QComboBox* errorCorrectionCombo;
+	QSpinBox* marginField;
+	QSpinBox* moduleSizeField;
+	QCheckBox* directEncodeCheckBox;
 protected:
 
 public:
@@ -42,8 +43,20 @@ public:
 	QRGenConfigDialog();
 	virtual ~QRGenConfigDialog();
 
-	void setSelectionType( SelectionType selectionType );
-	SelectionType selectionType();
+	void setSelectionType( Config::SelectionMode selectionType );
+	Config::SelectionMode selectionType();
+
+	void setModuleSize( unsigned int size );
+	unsigned int moduleSize();
+
+	void setMargin( unsigned int margin );
+	unsigned int margin();
+
+	void setErrorCorrection( Config::ErrorCorrectionMode e );
+	Config::ErrorCorrectionMode errorCorrection();
+
+	void setConfig( Config config );
+	Config config();
 };
 
 #endif
