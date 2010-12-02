@@ -10,9 +10,6 @@
 
 #include "qrencode.h"
 
-#include <QPixmap>
-#include <QString>
-
 class QREncoder
 {
 private:
@@ -23,7 +20,6 @@ public:
 	int size;
 	int margin;
 	int structured;
-	bool utf8Bom;
 	QRecLevel level;
 	QRencodeMode hint;
 
@@ -31,7 +27,6 @@ public:
 
 	QRcode *encode(const char *intext);
 	QRcode_List *encodeStructured(const char *intext);
-	QPixmap encodePixmap( QString text );
 };
 
 #endif /* QRENCODER_H_ */

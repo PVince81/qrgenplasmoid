@@ -19,12 +19,13 @@ include_directories(
    )
  
 # We add our source code here
-set(qrgenplasmoid_SRCS QRGenPlasmoid.cpp ui/QRGenConfigDialog.cpp ui/QRCodeWidget.cpp)
- 
+set(qrgenplasmoid_SRCS QRGenPlasmoid.cpp ui/QRCodeWidget.cpp ui/QRGenConfigDialog.cpp)
+
+
 kde4_add_plugin(plasma_applet_qrgen ${qrgenplasmoid_SRCS})
 target_link_libraries(plasma_applet_qrgen
                       ${KDE4_PLASMA_LIBS} ${KDE4_KDEUI_LIBS} ${QT_LIBRARIES} encoder)
- 
+
 install(TARGETS plasma_applet_qrgen
         DESTINATION ${PLUGIN_INSTALL_DIR})
 

@@ -33,9 +33,12 @@ private:
 	QREncoder* encoder;
 	QPixmap code;
 	bool empty;
+	bool m_useBom;
 protected:
 	void mousePressEvent ( QMouseEvent * ev );
 	void paintEvent(QPaintEvent * );
+	QPixmap encodeText( QString text );
+
 signals:
 	void clicked();
 public:

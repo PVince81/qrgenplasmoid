@@ -22,17 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <QImage>
-#include <QPixmap>
-#include <QPoint>
-#include <QPainter>
-
-
 #include "QREncoder.h"
 
 #define MAX_DATA_SIZE (7090 * 16) /* from the specification */
-
-const char BOM[3] = { 0xEF, 0xBB, 0xBF };
 
 QREncoder::QREncoder()
 {
@@ -42,7 +34,6 @@ QREncoder::QREncoder()
 	size = 3;
 	margin = 4;
 	structured = 0;
-	utf8Bom = false;
 	level = QR_ECLEVEL_L;
 	hint = QR_MODE_8;
 }
@@ -71,53 +62,4 @@ QRcode_List *QREncoder::encodeStructured(const char *intext)
 	}
 
 	return list;
-}
-
-QPixmap QREncoder::encodePixmap( QString text )
-{
-	QByteArray a = text.toUtf8();
-	if ( utf8Bom )
-	{
-		// insert BOM
-		a.insert( 0, BOM );
-	}
-	QRcode* qrcode = encode( a.data() );
-	if ( qrcode == NULL )
-	{
-		return NULL;
-	}
-
-	int realwidth = (qrcode->width + margin * 2) * size;
-	QImage* image = new QImage( realwidth, realwidth, QImage::Format_Mono );
-	QPainter painter(image);
-
-	painter.fillRect( QRect( 0, 0, realwidth, realwidth ), QColor( Qt::white ) );
-
-	QColor black( Qt::black );
-
-	int i = 0;
-	int x = 0;
-	int y = 0;
-	QRect rect( 0, 0, size, size );
-	while ( y < qrcode->width )
-	{
-		x = 0;
-		while ( x < qrcode->width )
-		{
-			// only if a block is present (black)
-			if ( qrcode->data[i] & 1 )
-			{
-				rect.moveTo( size * ( margin + x ), size * ( margin + y ) );
-				painter.fillRect( rect, black );
-			}
-			i++;
-			x++;
-		}
-		y++;
-	}
-
-	painter.end();
-
-	QPixmap pixmap = QPixmap::fromImage(*image);
-	return pixmap;
 }
