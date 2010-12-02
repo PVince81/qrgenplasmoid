@@ -36,6 +36,7 @@ private:
 	QSpinBox* marginField;
 	QSpinBox* moduleSizeField;
 	QCheckBox* directEncodeCheckBox;
+	QCheckBox* useBomCheckBox;
 protected:
 
 public:

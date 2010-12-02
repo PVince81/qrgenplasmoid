@@ -1,7 +1,6 @@
 Features:
 - add "encode mode" option (numeric, 7 bits, 8 bits, kanji, auto)
 - add setting for text box / code alignment ?
-- support for UTF-8/chinese chararcters
 - support to add it in the system tray
 
 Issues:

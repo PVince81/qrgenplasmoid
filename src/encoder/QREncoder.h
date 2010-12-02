@@ -23,6 +23,7 @@ public:
 	int size;
 	int margin;
 	int structured;
+	bool utf8Bom;
 	QRecLevel level;
 	QRencodeMode hint;
 

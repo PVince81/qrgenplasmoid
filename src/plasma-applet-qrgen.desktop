@@ -3,13 +3,13 @@ Name=QR Code Generator
 Comment=QR Code Generator
 Type=Service
 ServiceTypes=Plasma/Applet,Plasma/PopupApplet
-Icon=qrgenplasmoid
+Icon=plasma-applet-qrgen
  
-X-KDE-Library=qrgenapplet
+X-KDE-Library=plasma_applet_qrgen
 X-KDE-PluginInfo-Author=Vincent Petry
 X-KDE-PluginInfo-Email=PVince81@users.sourceforge.net
 X-KDE-PluginInfo-Name=qrgenplasmoid
-X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-Version=0.2
 #X-KDE-PluginInfo-Website=http://plasma.kde.org/
 X-KDE-PluginInfo-Category=Tools
 X-KDE-PluginInfo-Depends=

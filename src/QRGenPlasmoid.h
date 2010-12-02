@@ -34,6 +34,7 @@ class QRGenPlasmoid : public Plasma::PopupApplet
 {
 	Q_OBJECT
 private:
+	QString iconPath;
 	QString getClipboardContent();
 	QRCodeWidget* codeWidget;
 	QWidget* mainWidget;

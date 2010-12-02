@@ -36,7 +36,17 @@ typedef struct Config
 	unsigned int moduleSize;
 	unsigned int margin;
 	ErrorCorrectionMode errorCorrectionMode;
+
+	/**
+	 * Whether to encode directly while the user
+	 * is typing.
+	 */
 	bool directEncode;
+
+	/*
+	 * Whether to use UTF-8 BOM prefix
+	 */
+	bool useBom;
 } Config;
 
 #endif /* CONFIG_H_ */

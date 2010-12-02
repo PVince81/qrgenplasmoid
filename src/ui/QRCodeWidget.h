@@ -54,6 +54,9 @@ public:
 
 	void setErrorCorrection( Config::ErrorCorrectionMode e );
 	Config::ErrorCorrectionMode errorCorrection();
+
+	void setUseBom( bool useBom );
+	bool useBom();
 };
 
 #endif

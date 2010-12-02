@@ -78,6 +78,17 @@ unsigned int QRCodeWidget::margin()
 	return encoder->margin;
 }
 
+void QRCodeWidget::setUseBom( bool useBom )
+{
+	encoder->utf8Bom = useBom;
+}
+
+bool QRCodeWidget::useBom()
+{
+	return encoder->utf8Bom;
+}
+
+
 void QRCodeWidget::setErrorCorrection( Config::ErrorCorrectionMode e )
 {
 	switch (e)

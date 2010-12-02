@@ -61,6 +61,9 @@ QRGenConfigDialog::QRGenConfigDialog()
 	qrLayout->addRow(i18n("Error correction level"), errorCorrectionCombo);
 	//qrLayout->addRow(i18n("Encoder mode"));
 
+	useBomCheckBox = new QCheckBox();
+	qrLayout->addRow(i18n("Use UTF-8 BOM"), useBomCheckBox);
+
 	QGroupBox* groupBox = new QGroupBox( i18n("QR Code settings") );
 	groupBox->setLayout( qrLayout );
 	mainLayout->addRow( groupBox );
@@ -120,6 +123,7 @@ void QRGenConfigDialog::setConfig( Config config )
 	setSelectionType( config.selectionMode );
 
 	directEncodeCheckBox->setChecked( config.directEncode );
+	useBomCheckBox->setChecked( config.useBom );
 }
 
 Config QRGenConfigDialog::config()
@@ -131,6 +135,7 @@ Config QRGenConfigDialog::config()
 	config.moduleSize = moduleSize();
 	config.selectionMode = selectionType();
 	config.directEncode = directEncodeCheckBox->isChecked();
+	config.useBom = useBomCheckBox->isChecked();
 
 	return config;
 }

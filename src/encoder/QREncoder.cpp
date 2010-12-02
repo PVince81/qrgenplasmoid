@@ -32,6 +32,8 @@
 
 #define MAX_DATA_SIZE (7090 * 16) /* from the specification */
 
+const char BOM[3] = { 0xEF, 0xBB, 0xBF };
+
 QREncoder::QREncoder()
 {
 	casesensitive = 1;
@@ -40,6 +42,7 @@ QREncoder::QREncoder()
 	size = 3;
 	margin = 4;
 	structured = 0;
+	utf8Bom = false;
 	level = QR_ECLEVEL_L;
 	hint = QR_MODE_8;
 }
@@ -72,7 +75,13 @@ QRcode_List *QREncoder::encodeStructured(const char *intext)
 
 QPixmap QREncoder::encodePixmap( QString text )
 {
-	QRcode* qrcode = encode( text.toAscii().data() );
+	QByteArray a = text.toUtf8();
+	if ( utf8Bom )
+	{
+		// insert BOM
+		a.insert( 0, BOM );
+	}
+	QRcode* qrcode = encode( a.data() );
 	if ( qrcode == NULL )
 	{
 		return NULL;

@@ -21,14 +21,19 @@
 
 #include <QtGui>
 #include <KConfigGroup>
+#include <KGlobal>
+#include <KStandardDirs>
 
 QRGenPlasmoid::QRGenPlasmoid(QObject *parent, const QVariantList &args)
 	: Plasma::PopupApplet(parent, args)
 {
 	//resize(30, 30);
+	iconPath = KGlobal::dirs()->installPath("icon") + "plasma-applet-qrgen.png";
 
 	this->setMinimumSize( 32, 32 );
-	this->setPopupIcon("qrgenplasmoid");
+	this->setPopupIcon( iconPath );
+
+
 
 	configuration.errorCorrectionMode = Config::L;
 	configuration.moduleSize = 1;
@@ -132,6 +137,7 @@ void QRGenPlasmoid::loadConfig()
 	//configuration.moduleSize = cnf.readEntry( "moduleSize", 1 );
 	configuration.margin = cnf.readEntry( "margin", 1 );
 	configuration.directEncode = cnf.readEntry( "directEncode", true );
+	configuration.useBom = cnf.readEntry( "useBom", true );
 }
 
 void QRGenPlasmoid::saveConfig()
@@ -156,13 +162,14 @@ void QRGenPlasmoid::saveConfig()
 	//cnf.writeEntry( "moduleSize", configuration.moduleSize );
 	cnf.writeEntry( "margin", configuration.margin );
 	cnf.writeEntry( "directEncode", configuration.directEncode );
+	cnf.writeEntry( "useBom", configuration.useBom );
 
 	emit configNeedsSaving();
 }
 
 QWidget* QRGenPlasmoid::widget()
 {
-	qDebug()<<"QRGenPlasmoid::widget()";
+	//qDebug()<<"QRGenPlasmoid::widget()";
 	return mainWidget;
 }
 
@@ -211,6 +218,7 @@ void QRGenPlasmoid::applyConfig()
 	codeWidget->setMargin(configuration.margin);
 	codeWidget->setModuleSize(configuration.moduleSize);
 	codeWidget->setErrorCorrection(configuration.errorCorrectionMode);
+	codeWidget->setUseBom(configuration.useBom);
 
 	encodeButton->setVisible( !configuration.directEncode );
 }
@@ -237,7 +245,7 @@ void QRGenPlasmoid::createConfigurationInterface( KConfigDialog* parent )
 
     connect( parent, SIGNAL( accepted() ), this, SLOT( configAccepted() ) );
 
-    parent->addPage( configDialog, i18n("General"), icon() );
+    parent->addPage( configDialog, i18n("General"), iconPath );
 
 	setHasConfigurationInterface(true);
 }
