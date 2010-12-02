@@ -49,7 +49,9 @@ QRGenConfigDialog::QRGenConfigDialog()
 
 	QFormLayout* qrLayout = new QFormLayout();
 	qrLayout->addRow(i18n("Margin"), marginField);
-	qrLayout->addRow(i18n("Module size"), moduleSizeField);
+	// module size doesn't make sense any more because the
+	// QR code can be stretched
+	//qrLayout->addRow(i18n("Module size"), moduleSizeField);
 
 	errorCorrectionCombo = new QComboBox();
 	errorCorrectionCombo->addItem("L", Config::L);

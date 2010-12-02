@@ -31,7 +31,7 @@ QRGenPlasmoid::QRGenPlasmoid(QObject *parent, const QVariantList &args)
 	this->setPopupIcon("qrgenplasmoid");
 
 	configuration.errorCorrectionMode = Config::L;
-	configuration.moduleSize = 5;
+	configuration.moduleSize = 1;
 	configuration.margin = 1;
 	configuration.selectionMode = Config::Selection;
 	configuration.directEncode = true;
@@ -129,7 +129,7 @@ void QRGenPlasmoid::loadConfig()
 		configuration.errorCorrectionMode = Config::L;
 	}
 
-	configuration.moduleSize = cnf.readEntry( "moduleSize", 5 );
+	//configuration.moduleSize = cnf.readEntry( "moduleSize", 1 );
 	configuration.margin = cnf.readEntry( "margin", 1 );
 	configuration.directEncode = cnf.readEntry( "directEncode", true );
 }
@@ -153,7 +153,7 @@ void QRGenPlasmoid::saveConfig()
 		default: errorCorrectionString = "L"; break;
 	}
 
-	cnf.writeEntry( "moduleSize", configuration.moduleSize );
+	//cnf.writeEntry( "moduleSize", configuration.moduleSize );
 	cnf.writeEntry( "margin", configuration.margin );
 	cnf.writeEntry( "directEncode", configuration.directEncode );
 
@@ -225,7 +225,9 @@ void QRGenPlasmoid::textChanged()
 
 void QRGenPlasmoid::encodeAction()
 {
-	codeWidget->setText( editor->toPlainText() );
+	QString text = editor->toPlainText();
+	codeWidget->setText( text );
+	codeWidget->setToolTip( text );
 }
 
 void QRGenPlasmoid::createConfigurationInterface( KConfigDialog* parent )

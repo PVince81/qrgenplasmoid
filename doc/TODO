@@ -1,12 +1,12 @@
 Features:
-- improve UI design
-- i18n
 - add "encode mode" option (numeric, 7 bits, 8 bits, kanji, auto)
 - add setting for text box / code alignment ?
-- save the splitter state/size
+- support for UTF-8/chinese chararcters
+- support to add it in the system tray
 
-Tests:
-- Test config load/save
-- Test margin/size changes
-- Test code update after config change
-- Test with UTF-8 / chinese characters 
+Issues:
+- improve UI design
+- i18n
+- save the splitter state/size
+- set text length limit
+- resize popup window to be bigger?
