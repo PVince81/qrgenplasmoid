@@ -28,8 +28,8 @@ target_link_libraries(plasma_applet_qrgen
 install(TARGETS plasma_applet_qrgen
         DESTINATION ${PLUGIN_INSTALL_DIR})
 
-install(FILES plasma_applet_qrgen.desktop
+install(FILES plasma-applet-qrgen.desktop
         DESTINATION ${SERVICES_INSTALL_DIR})
 
-install(FILES plasma_applet_qrgen.png
+install(FILES plasma-applet-qrgen.png
         DESTINATION ${KDE4_ICON_INSTALL_DIR})
